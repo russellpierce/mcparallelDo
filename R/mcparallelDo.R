@@ -13,7 +13,7 @@
 jobCompleteSelfDestructingHandler <- function(targetJob, targetValue, verbose, targetEnvironment) {
     return(
       function(expr, value, ok, visible) {
-        jobResult <- parallel::mccollect(get(targetJob), wait=FALSE)
+        jobResult <- parallel::mccollect(get(targetJob, envir = targetEnvironment), wait=FALSE)
         if(is.null(jobResult)) {
           return(TRUE)
         } else {
