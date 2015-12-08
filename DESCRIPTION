@@ -5,5 +5,15 @@ Version: 1.0
 Date: 2015-12-07
 Author: Russell S. Pierce
 Maintainer: Russell S. Pierce <russell.s.pierce@gmail.com>
-Description: Wraps mcparallel and mccollect with temporary variables and a task handler to return the results of an mcparallel call to the R session when it is complete without an additional manually specified R command
+Description: This package provides mcparallelDo.  mcparallelDo is a function that
+    wraps mcparallel and mccollect with temporary variables and a task
+    handler.  Wrapped in this way the results of an mcparallel call 
+    can be returned to the R session when the fork is complete 
+    without explicitly issuing a specific mccollect to retrieve the value.
 License: GPL-2
+Suggests: 
+    svSocket
+RoxygenNote: 5.0.1
+Imports: parallel,
+    R.utils,
+    ArgumentCheck
