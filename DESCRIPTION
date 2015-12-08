@@ -12,9 +12,9 @@ Description: This package provides mcparallelDo.  mcparallelDo is a function tha
     without explicitly issuing a specific mccollect to retrieve the value.
 License: GPL-2
 Suggests: 
-    svSocket,
     testthat
 RoxygenNote: 5.0.1
 Imports: parallel,
     R.utils,
-    ArgumentCheck
+    ArgumentCheck,
+    R6

@@ -16,6 +16,9 @@ mcparallelDo(code, targetValue, verbose = TRUE,
 
 \item{targetEnvironment}{The environment in which you want targetValue to be created}
 }
+\value{
+The variable name of the job, this can be manually collected via mccollect
+}
 \description{
 This function creates a fork, evaluates a segment of code evaluated in the fork, and the result 
 of the fork returned in a variable named targetValue in the targetEnvironment.

@@ -1,3 +1,72 @@
+#' The mcparallelDoManager Class and Object
+#' 
+#' @docType class
+#' @importFrom R6 R6Class
+.mcparallelDoManagerClass <- R6::R6Class("mcparallelDoManager",
+        public = list(
+          h = taskCallbackManager()
+          ,runningJobs = list()
+          ,addJob = function(jobName, targetValue, verbose, targetEnvironment) {
+            self$h$add(jobCompleteSelfDestructingHandler(jobName, targetValue, verbose, targetEnvironment))
+            self$runningJobs[[jobName]] <- list(jobName=jobName, targetValue=targetValue, verbose=verbose, targetEnvironment=targetEnvironment)
+          }
+          ,removeJob = function(x) {
+            self$runningJobs <- self$runningJobs[names(self$runningJobs)!=x]
+          }
+          ,checkJobs = function() {
+            sapply(names(self$runningJobs), function(x) {
+              checkIfJobStillRunning(
+                targetJob = x, 
+                targetValue = self$runningJobs[[x]]$targetValue, 
+                verbose = self$runningJobs[[x]]$verbose, 
+                targetEnvironment = self$runningJobs[[x]]$targetEnvironment
+              )
+            })
+          }
+        )
+)
+.mcparallelDoManager <- .mcparallelDoManagerClass$new()
+
+#' mcparallelDoCheck
+#'
+#' Forces a check on all mcparallelDo jobs and returns their values to the target environment if they are complete.
+#' @return A named logical vector, TRUE if complete, FALSE if not complete
+#' @export
+mcparallelDoCheck <- function() {
+  jobNames <- names(.mcparallelDoManager$runningJobs)
+  jobStatus <- !.mcparallelDoManager$checkJobs()
+  names(jobStatus) <- jobNames
+  return(jobStatus)
+}
+NULL
+
+#' checkIfJobStillRunning
+#'
+#' @param targetJob (character) The job name
+#' @param targetValue (character) The return variable name
+#' @param verbose (logical) Whether a message will be generated when complete
+#' @param targetEnvironment (environment) Target environment
+#'
+#' @return logical; TRUE if still running; FALSE if not running
+checkIfJobStillRunning <- function(targetJob, targetValue, verbose, targetEnvironment) {
+  # Job is only still available for collection if it is in .mcparallelDoManager$runningJobs
+  if (targetJob %in% names(.mcparallelDoManager$runningJobs)) {
+    jobResult <- parallel::mccollect(get(targetJob, envir = targetEnvironment), wait=FALSE)
+    if(is.null(jobResult)) {
+      return(TRUE)
+    } else {
+      rm(list = targetJob, envir = targetEnvironment)
+      assign(targetValue, jobResult[[1]], envir = targetEnvironment)
+      if (verbose) message(targetValue, " has a new value")
+      .mcparallelDoManager$removeJob(targetJob)
+      return(FALSE)
+    }
+  } else {
+    return(FALSE)
+  }
+}
+NULL
+
 #' jobCompleteDestructingHandler
 #'
 #' Creates a callback handler function that can be added via addTaskCallback.
@@ -9,22 +78,12 @@
 #' @param targetEnvironment The environment in which you want targetValue to be created
 #'
 #' @return callback handler function
-
 jobCompleteSelfDestructingHandler <- function(targetJob, targetValue, verbose, targetEnvironment) {
+  function(expr, value, ok, visible) {
     return(
-      function(expr, value, ok, visible) {
-        jobResult <- parallel::mccollect(get(targetJob, envir = targetEnvironment), wait=FALSE)
-        if(is.null(jobResult)) {
-          return(TRUE)
-        } else {
-          rm(list = targetJob, envir = targetEnvironment)
-          assign(targetValue, jobResult[[1]], envir = targetEnvironment)
-          if (verbose) message(targetValue, " has a new value")
-          return(FALSE)
-        }
-      return(TRUE)
-    }
-  )
+      checkIfJobStillRunning(targetJob, targetValue, verbose, targetEnvironment)
+    )
+  }
 }
 NULL
 
@@ -40,7 +99,7 @@ NULL
 #' @param verbose A boolean element; if TRUE the completion of the fork expr will be accompanied by a message
 #' @param targetEnvironment The environment in which you want targetValue to be created
 #'
-#' @return NULL
+#' @return The variable name of the job, this can be manually collected via mccollect
 #'
 #' @examples
 #' ## Create data
@@ -81,7 +140,7 @@ mcparallelDo <- function(code, targetValue, verbose = TRUE, targetEnvironment = 
   jobName <- R.utils::tempvar(".mcparallelDoJob", 
                               value = parallel::mcparallel({try(code)}),
                               envir = targetEnvironment)
-  addTaskCallback(jobCompleteSelfDestructingHandler(jobName, targetValue, verbose, targetEnvironment))
-  return(NULL)
+  .mcparallelDoManager$addJob(jobName, targetValue, verbose, targetEnvironment)
+  return(jobName)
 }
 NULL

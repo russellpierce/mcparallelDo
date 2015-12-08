@@ -1,16 +1,13 @@
-context("basic tests")
-test_that("in global functionality",{
-          mcparallelDo({2+2}, targetValue = "output")
-          Sys.sleep(1)
-          x <- 1+1
-          expect_equal(get("output", envir = .GlobalEnv), 4)
-  }
-)
-
-test_that("in parent.frame functionality",{
-          mcparallelDo({2+2}, targetValue = "output", targetEnvironment = parent.frame())
-          Sys.sleep(1)
-          x <- 1+1
-          expect_equal(get("output", envir = parent.frame()), 4)
-  }
-)
+context("explicitly retrieved tests")
+test_that("basic calls work",{
+    mcparallelDo({2+2}, targetValue = "output4")
+    mcparallelDo({4+4}, targetValue = "output8")
+    mcparallelDo({Sys.sleep(5);8+8}, targetValue = "outputSleepy16")
+    Sys.sleep(1)
+    expect_equal(sum(mcparallelDoCheck()),2)
+    expect_equal(output4,4)
+    expect_equal(output8,8)
+    Sys.sleep(5)
+    expect_equal(sum(mcparallelDoCheck()),1)
+    expect_equal(outputSleepy16,16)
+})
