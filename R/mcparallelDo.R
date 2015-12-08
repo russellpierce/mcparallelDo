@@ -1,14 +1,15 @@
 #' The mcparallelDoManager Class and Object
-#' 
+#' @aliases mcparallelDoManager
 #' @docType class
 #' @importFrom R6 R6Class
-.mcparallelDoManagerClass <- R6::R6Class("mcparallelDoManager",
+mcparallelDoManagerClass <- R6::R6Class("mcparallelDoManager",
         public = list(
           h = taskCallbackManager()
           ,runningJobs = list()
           ,addJob = function(jobName, targetValue, verbose, targetEnvironment) {
             self$h$add(jobCompleteSelfDestructingHandler(jobName, targetValue, verbose, targetEnvironment))
             self$runningJobs[[jobName]] <- list(jobName=jobName, targetValue=targetValue, verbose=verbose, targetEnvironment=targetEnvironment)
+            assign(targetValue, value = NULL, envir = targetEnvironment)
           }
           ,removeJob = function(x) {
             self$runningJobs <- self$runningJobs[names(self$runningJobs)!=x]
@@ -25,7 +26,7 @@
           }
         )
 )
-.mcparallelDoManager <- .mcparallelDoManagerClass$new()
+.mcparallelDoManager <- mcparallelDoManagerClass$new()
 
 #' mcparallelDoCheck
 #'
@@ -89,10 +90,13 @@ NULL
 
 #' mcparallelDo
 #'
-#' This function creates a fork, evaluates a segment of code evaluated in the fork, and the result 
-#' of the fork returned in a variable named targetValue in the targetEnvironment.
+#' This function creates a fork, 
+#' sets the variable named targetValue in the targetEnvironment to NULL,
+#' evaluates a segment of code evaluated in the fork, 
+#' and the result of the fork returned in a variable named targetValue in the targetEnvironment after the next top-level command completes.
 #' If there is an error in the code, the returned variable will be a try-error.
-#' These effects are accomplished via the automatic creation and destruction of a taskCallback.  So, the result in targetValue will only occur after some other R command is issued.
+#' These effects are accomplished via the automatic creation and destruction of a taskCallback and other functions inside the mcparallelDoManager.
+#' If job results have to be collected before you return to the top level, use \link{mcparallelDoCheck}.
 #' 
 #' @param code The code to evaluate within a fork wrapped in {}
 #' @param targetValue A character element indicating the variable that the result of that job should be assigned to targetEnvironment
@@ -112,10 +116,30 @@ NULL
 #' ## The result from mcparallelDo returns in your targetEnvironment, 
 #' ## e.g. .GlobalEnv, when it is complete with a message (by default)
 #' summary(interactionPredictorModel)
+#' 
+#' # Example of not returning a value until we return to the top level
+#' for (i in 1:10) {
+#'   if (i == 1) {
+#'     mcparallelDo({2+2}, targetValue = "output")
+#'   }
+#'   if (exists("output")) print(i)
+#' }
+#' 
+#' # Example of getting a value without returning to the top level
+#' for (i in 1:10) {
+#'   if (i == 1) {
+#'     mcparallelDo({2+2}, targetValue = "output")
+#'   }
+#'   mcparallelDoCheck()
+#'   if (exists("output")) print(i)
+#' }
 #' @importFrom ArgumentCheck addError finishArgCheck
 #' @importFrom R.utils tempvar
 #' @export
 mcparallelDo <- function(code, targetValue, verbose = TRUE, targetEnvironment = .GlobalEnv) {
+  if (!.Platform$OS.type=="unix") {
+    stop("mcparallelDo only works on unix alikes")
+  }
   Check <- ArgumentCheck::newArgCheck()
   if (!is.character(targetValue)) {
     ArgumentCheck::addError(

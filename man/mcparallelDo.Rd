@@ -20,10 +20,13 @@ mcparallelDo(code, targetValue, verbose = TRUE,
 The variable name of the job, this can be manually collected via mccollect
 }
 \description{
-This function creates a fork, evaluates a segment of code evaluated in the fork, and the result 
-of the fork returned in a variable named targetValue in the targetEnvironment.
+This function creates a fork, 
+sets the variable named targetValue in the targetEnvironment to NULL,
+evaluates a segment of code evaluated in the fork, 
+and the result of the fork returned in a variable named targetValue in the targetEnvironment after the next top-level command completes.
 If there is an error in the code, the returned variable will be a try-error.
-These effects are accomplished via the automatic creation and destruction of a taskCallback.  So, the result in targetValue will only occur after some other R command is issued.
+These effects are accomplished via the automatic creation and destruction of a taskCallback and other functions inside the mcparallelDoManager.
+If job results have to be collected before you return to the top level, use \link{mcparallelDoCheck}.
 }
 \examples{
 ## Create data
@@ -36,5 +39,22 @@ gaussianPredictorModel <- glm(len ~ dose, data=ToothGrowth)
 ## The result from mcparallelDo returns in your targetEnvironment, 
 ## e.g. .GlobalEnv, when it is complete with a message (by default)
 summary(interactionPredictorModel)
+
+# Example of not returning a value until we return to the top level
+for (i in 1:10) {
+  if (i == 1) {
+    mcparallelDo({2+2}, targetValue = "output")
+  }
+  if (exists("output")) print(i)
+}
+
+# Example of getting a value without returning to the top level
+for (i in 1:10) {
+  if (i == 1) {
+    mcparallelDo({2+2}, targetValue = "output")
+  }
+  mcparallelDoCheck()
+  if (exists("output")) print(i)
+}
 }
 
