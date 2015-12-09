@@ -21,10 +21,10 @@ The variable name of the job, this can be manually collected via mccollect or, i
 }
 \description{
 This function creates a fork, 
-sets the variable named targetValue in the targetEnvironment to NULL,
+sets the variable named \code{targetValue} in the \code{targetEnvironment} to NULL,
 evaluates a segment of code evaluated in the fork, 
-and the result of the fork returned in a variable named targetValue in the targetEnvironment after the next top-level command completes.
-If there is an error in the code, the returned variable will be a try-error.
+and the result of the fork returned in a variable named \code{targetValue} in the \code{targetEnvironment} after the next top-level command completes.
+If there is an error in the code, the returned variable will be a \code{try-error}.
 These effects are accomplished via the automatic creation and destruction of a taskCallback and other functions inside the mcparallelDoManager.
 If job results have to be collected before you return to the top level, use \link{mcparallelDoCheck}.
 }

@@ -20,8 +20,8 @@ jobCompleteSelfDestructingHandler(targetJob, targetValue, verbose,
 callback handler function
 }
 \description{
-Creates a callback handler function that can be added via addTaskCallback.
+Creates a callback handler function that can be added via addTaskCallback().
 These functions run at the end of each completed R statement.
-This particular handler watches for the completion of the target job (created via mcparallel)
+This particular handler watches for the completion of the target job, which is created via mcparallel()
 }
 

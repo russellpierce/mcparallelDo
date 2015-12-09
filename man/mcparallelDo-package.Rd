@@ -8,7 +8,7 @@
 A repository for a variety of useful functions.
 }
 \details{
-The primary function of this package is mcparallelDo.  
-To use mcparallelDo, simply invoke the function with a curly braced wrapped code and the character element name to which you want to assign the results.
+The primary function of this package is mcparallelDo().  
+To use mcparallelDo(), simply invoke the function with a curly braced wrapped code and the character element name to which you want to assign the results.
 }
 

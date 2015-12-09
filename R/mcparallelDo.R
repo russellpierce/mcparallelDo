@@ -1,7 +1,7 @@
 #'A repository for a variety of useful functions.
 #'
-#' The primary function of this package is mcparallelDo.  
-#' To use mcparallelDo, simply invoke the function with a curly braced wrapped code and the character element name to which you want to assign the results.
+#' The primary function of this package is mcparallelDo().  
+#' To use mcparallelDo(), simply invoke the function with a curly braced wrapped code and the character element name to which you want to assign the results.
 #'
 #' @name mcparallelDo-package
 #' @docType package
@@ -10,7 +10,7 @@
 NULL
 .onAttach <- function(libname,pkgname) {
   if (.Platform$OS.type != "unix") {
-    warning("mcparallelDoCheck only performs parallel processing on unix alikes; there will be no further warnings")
+    warning("'mcparallelDo' only performs parallel processing on unix alikes; there will be no further warnings")
   }
 }
 NULL
@@ -47,7 +47,7 @@ mcparallelDoManagerClass <- R6::R6Class("mcparallelDoManager",
 
 #' mcparallelDoCheck
 #'
-#' Forces a check on all mcparallelDo jobs and returns their values to the target environment if they are complete.
+#' Forces a check on all mcparallelDo() jobs and returns their values to the target environment if they are complete.
 #' @return A named logical vector, TRUE if complete, FALSE if not complete, and an empty logical vector if on Windows
 #' @export
 mcparallelDoCheck <- function() {
@@ -92,9 +92,9 @@ NULL
 
 #' jobCompleteDestructingHandler
 #'
-#' Creates a callback handler function that can be added via addTaskCallback.
+#' Creates a callback handler function that can be added via addTaskCallback().
 #' These functions run at the end of each completed R statement.
-#' This particular handler watches for the completion of the target job (created via mcparallel)
+#' This particular handler watches for the completion of the target job, which is created via mcparallel()
 #' @param targetJob (character) Name of the mcparallel job variable that is waiting for a result
 #' @param targetValue A character element indicating the variable that the result of that job should be assigned to targetEnvironment
 #' @param verbose A boolean element; if TRUE the completion of the fork expr will be accompanied by a message
@@ -113,10 +113,10 @@ NULL
 #' mcparallelDo
 #'
 #' This function creates a fork, 
-#' sets the variable named targetValue in the targetEnvironment to NULL,
+#' sets the variable named \code{targetValue} in the \code{targetEnvironment} to NULL,
 #' evaluates a segment of code evaluated in the fork, 
-#' and the result of the fork returned in a variable named targetValue in the targetEnvironment after the next top-level command completes.
-#' If there is an error in the code, the returned variable will be a try-error.
+#' and the result of the fork returned in a variable named \code{targetValue} in the \code{targetEnvironment} after the next top-level command completes.
+#' If there is an error in the code, the returned variable will be a \code{try-error}.
 #' These effects are accomplished via the automatic creation and destruction of a taskCallback and other functions inside the mcparallelDoManager.
 #' If job results have to be collected before you return to the top level, use \link{mcparallelDoCheck}.
 #' 
