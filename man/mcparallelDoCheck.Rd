@@ -7,7 +7,7 @@
 mcparallelDoCheck()
 }
 \value{
-A named logical vector, TRUE if complete, FALSE if not complete
+A named logical vector, TRUE if complete, FALSE if not complete, and an empty logical vector if on Windows
 }
 \description{
 Forces a check on all mcparallelDo jobs and returns their values to the target environment if they are complete.

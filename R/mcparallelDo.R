@@ -1,3 +1,20 @@
+#'A repository for a variety of useful functions.
+#'
+#' The primary function of this package is mcparallelDo.  
+#' To use mcparallelDo, simply invoke the function with a curly braced wrapped code and the character element name to which you want to assign the results.
+#'
+#' @name mcparallelDo-package
+#' @docType package
+#' @title mcparallelDo-package placeholder
+#'
+NULL
+.onAttach <- function(libname,pkgname) {
+  if (.Platform$OS.type != "unix") {
+    warning("mcparallelDoCheck only performs parallel processing on unix alikes; there will be no further warnings")
+  }
+}
+NULL
+
 #' The mcparallelDoManager Class and Object
 #' @aliases mcparallelDoManager
 #' @docType class
@@ -31,9 +48,14 @@ mcparallelDoManagerClass <- R6::R6Class("mcparallelDoManager",
 #' mcparallelDoCheck
 #'
 #' Forces a check on all mcparallelDo jobs and returns their values to the target environment if they are complete.
-#' @return A named logical vector, TRUE if complete, FALSE if not complete
+#' @return A named logical vector, TRUE if complete, FALSE if not complete, and an empty logical vector if on Windows
 #' @export
 mcparallelDoCheck <- function() {
+  # Special handling for Windows
+  if (.Platform$OS.type != "unix") {
+    return(logical())
+  }
+  
   jobNames <- names(.mcparallelDoManager$runningJobs)
   jobStatus <- !.mcparallelDoManager$checkJobs()
   names(jobStatus) <- jobNames
@@ -103,7 +125,7 @@ NULL
 #' @param verbose A boolean element; if TRUE the completion of the fork expr will be accompanied by a message
 #' @param targetEnvironment The environment in which you want targetValue to be created
 #'
-#' @return The variable name of the job, this can be manually collected via mccollect
+#' @return The variable name of the job, this can be manually collected via mccollect or, if on Windows, an empty string
 #'
 #' @examples
 #' ## Create data
@@ -137,9 +159,6 @@ NULL
 #' @importFrom R.utils tempvar
 #' @export
 mcparallelDo <- function(code, targetValue, verbose = TRUE, targetEnvironment = .GlobalEnv) {
-  if (!.Platform$OS.type=="unix") {
-    stop("mcparallelDo only works on unix alikes")
-  }
   Check <- ArgumentCheck::newArgCheck()
   if (!is.character(targetValue)) {
     ArgumentCheck::addError(
@@ -160,6 +179,12 @@ mcparallelDo <- function(code, targetValue, verbose = TRUE, targetEnvironment = 
     )
   }
   ArgumentCheck::finishArgCheck(Check)
+  
+  # Special handling for Windows
+  if (!.Platform$OS.type=="unix") {
+    assign(targetValue, value = {code}, envir = targetEnvironment)
+    return("")
+  }
   
   jobName <- R.utils::tempvar(".mcparallelDoJob", 
                               value = parallel::mcparallel({try(code)}),
