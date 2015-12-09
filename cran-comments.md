@@ -1,7 +1,7 @@
 ## Test environments
 * local OS X install, R 3.1.2
 * ubuntu 12.04 (on travis-ci), R 3.1.2
-* NOTE: win-builder is *not* applicable
+*NOTE*: win-builder is *not* applicable
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
@@ -13,5 +13,11 @@ There was 1 NOTE:
 
   R6 is a build-time dependency.
 
+Possibly mis-spelled words in DESCRIPTION:
+  mccollect (10:26, 13:43)
+  mcparallel (10:11, 11:53)
+  mcparallelDo (9:36, 9:51)
+All of the above are function names
+
 ## Downstream dependencies
-This is a new submission, there are none.
+This is a new package.  There are no downstream dependencies. 
