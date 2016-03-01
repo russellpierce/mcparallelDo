@@ -155,30 +155,23 @@ NULL
 #'   mcparallelDoCheck()
 #'   if (exists("output")) print(i)
 #' }
-#' @importFrom ArgumentCheck addError finishArgCheck
+#' @importFrom checkmate assertCharacter makeAssertCollection assertEnvironment reportAssertions
 #' @importFrom R.utils tempvar
 #' @export
 mcparallelDo <- function(code, targetValue, verbose = TRUE, targetEnvironment = .GlobalEnv) {
-  Check <- ArgumentCheck::newArgCheck()
-  if (!is.character(targetValue)) {
-    ArgumentCheck::addError(
-      msg = "targetValue must be a character",
-      argcheck = Check
-    )
-  }
+  coll <- checkmate::makeAssertCollection()
+
+  checkmate::assertCharacter(targetValue,
+                             add = coll)
+
   if (length(targetValue) != 1) {
-    ArgumentCheck::addError(
-      msg = "targetValue must be a single element",
-      argcheck = Check
-    )
+    coll$push("targetValue must be a single element")
   }
-  if (!is.environment(targetEnvironment)) {
-    ArgumentCheck::addError(
-      msg = "targetEnvironment must be an environment",
-      argcheck = Check
-    )
-  }
-  ArgumentCheck::finishArgCheck(Check)
+
+  checkmate::assertEnvironment(targetEnvironment,
+                               add = coll)
+
+  checkmate::reportAssertions(coll)
   
   # Special handling for Windows
   if (!.Platform$OS.type=="unix") {
