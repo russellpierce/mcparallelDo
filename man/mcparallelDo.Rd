@@ -8,7 +8,7 @@
 mcparallelDo(code, targetValue, verbose = TRUE,
   targetEnvironment = .GlobalEnv)
 
-x \%mcpDo\% value
+targetValue \%mcpDo\% code
 }
 \arguments{
 \item{code}{The code to evaluate within a fork wrapped in {}}
@@ -20,7 +20,7 @@ x \%mcpDo\% value
 \item{targetEnvironment}{The environment in which you want targetValue to be created}
 }
 \value{
-The variable name of the job, this can be manually collected via mccollect or, if on Windows, an empty string
+If \code{verbose} is set to TRUE, then the \code{character} variable name of the job. This can be manually collected via mccollect or, if on Windows, an empty string.  If \code{verbose} is set to FALSE, then NULL.
 }
 \description{
 This function creates a fork, 
@@ -30,9 +30,8 @@ and the result of the fork returned in a variable named \code{targetValue} in th
 If there is an error in the code, the returned variable will be a \code{try-error}.
 These effects are accomplished via the automatic creation and destruction of a taskCallback and other functions inside the mcparallelDoManager.
 If job results have to be collected before you return to the top level, use \link{mcparallelDoCheck}.
-}
-\details{
-%mdpDo% Is an alternate form of calling the function, as if it were an assignment operator.  See examples.
+
+\%mdpDo\% Is an alternate form of calling the function, as if it were an assignment operator.  See examples.
 }
 \examples{
 ## Create data
@@ -64,7 +63,7 @@ for (i in 1:10) {
 }
 
 # Example of dispatching as assignment
-x \%mcpDo\% {sample(LETTERS, 10)}
+targetValueWithoutQuotes \%mcpDo\% sample(LETTERS, 10)
 
 }
 

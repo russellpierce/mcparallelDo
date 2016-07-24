@@ -120,7 +120,6 @@ NULL
 #' These effects are accomplished via the automatic creation and destruction of a taskCallback and other functions inside the mcparallelDoManager.
 #' If job results have to be collected before you return to the top level, use \link{mcparallelDoCheck}.
 #' 
-#' %mdpDo% Is an alternate form of calling the function, as if it were an assignment operator.  See examples.
 #' 
 #' @param code The code to evaluate within a fork wrapped in {}
 #' @param targetValue A character element indicating the variable that the result of that job should be assigned to targetEnvironment
@@ -193,11 +192,12 @@ mcparallelDo <- function(code, targetValue, verbose = TRUE, targetEnvironment = 
 }
 NULL
 
+#' \%mdpDo\% Is an alternate form of calling the function, as if it were an assignment operator.  See examples.
 #' @rdname mcparallelDo
 #' @export
-`%mcpDo%`<- function(x, value) {
-  target <- as.character(substitute(x))
-  expr <- substitute(value)
+`%mcpDo%`<- function(targetValue, code) {
+  target <- as.character(substitute(targetValue))
+  expr <- substitute(code)
   mcparallelDo(expr, target, verbose = TRUE)
 }
 NULL
