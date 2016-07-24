@@ -5,7 +5,7 @@ A Simplified Interface for Running Commands on Parallel Processes.
 
 **NOTE:** Given that Windows does not support parallalism through forks, the R base functions `mcparallel` and `mccollect` do not work.  Therefore, although `mcparallelDo` will work on windows and pass through commands to be evaluated, it has no meaningful effect on Windows.
 
-**NOTE2:** The package [future](https://cran.r-project.org/web/packages/future/index.html) appears to contain all of the functionality of `mcparallelDo` and more.  Consider using it before using mcparallelDo.
+**NOTE2:** The package [future](https://cran.r-project.org/package=future) appears to contain much of the functionality of `mcparallelDo` and more.  Consider using it before using `package:mcparallelDo` if all you want to do is defer the execution of code.  If you want an automatic notification when the code you are running is complete, then consider using `package:mcparallelDo`.
 
 # Purpose
 In an interactive session one may be blocked in performing additional work by waiting for a model fit.  It is cumbersome to launch an `mcparallel` fork to perform the work and the manually collect the result via `mccollect`.  Specfically, one is left uncertain about when the work might be completed, requiring either some blocking due to the use of `wait = TRUE` or some inconvience by repeatedly running mccollect every now and again to see if the computation has finished.
