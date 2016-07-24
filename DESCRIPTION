@@ -2,7 +2,7 @@ Package: mcparallelDo
 Type: Package
 Title: A Simplified Interface for Running Commands on Parallel Processes
 Version: 1.1.0
-Date: 2015-12-07
+Date: 2016-07-26
 Author: Russell S. Pierce
 Maintainer: Russell S. Pierce <russell.s.pierce@gmail.com>
 Description: Provides a function that wraps 
