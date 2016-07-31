@@ -14,7 +14,7 @@ In an interactive session one may be blocked in performing additional work by wa
 
 * parallel (for forking functions)
 * R.utils (for temporary variables)
-* ArgumentCheck (for argument checking
+* checkmate (for argument checking)
 * R6 (for the management object that keeps track of jobs)
 
 # Getting Started
