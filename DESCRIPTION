@@ -1,8 +1,8 @@
 Package: mcparallelDo
 Type: Package
 Title: A Simplified Interface for Running Commands on Parallel Processes
-Version: 1.0.1
-Date: 2015-12-07
+Version: 1.1.0
+Date: 2016-07-26
 Author: Russell S. Pierce
 Maintainer: Russell S. Pierce <russell.s.pierce@gmail.com>
 Description: Provides a function that wraps 
@@ -13,10 +13,13 @@ Description: Provides a function that wraps
     Outside of top-level tasks, multiple mcparallel() jobs can be retrieved with 
     a single call to mcparallelDoCheck().
 License: GPL-2
-Suggests: 
-    testthat
+Suggests:
+    testthat,
+    covr
 RoxygenNote: 5.0.1
 Imports: parallel,
     R.utils,
     checkmate (>= 1.6.3),
     R6
+URL: https://github.com/drknexus/mcparallelDo
+BugReports: https://github.com/drknexus/mcparallelDo/issues
